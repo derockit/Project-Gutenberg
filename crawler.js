@@ -73,7 +73,7 @@ export class Crawler {
   }
 
   async save(item) {
-    const label = chalk.green(`[${item.id}] ${item.title}`);
+    const label = chalk.gray(`[${chalk.green(item.id)}] ${item.title}`);
     const hash = md5(item.id);
     const directory = this.hashToPath(hash);
     if (existsSync(`${directory}/README.md`)) {
