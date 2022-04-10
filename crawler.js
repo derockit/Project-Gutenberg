@@ -6,6 +6,7 @@ import {
   readFileSync,
   writeFileSync,
 } from 'fs';
+import chalk from 'chalk';
 import md5 from 'md5';
 import fetch from 'node-fetch';
 import json2md from 'json2md';
@@ -72,14 +73,14 @@ export class Crawler {
   }
 
   async save(item) {
-    const label = `%c[${item.id}] ${item.title}`;
+    const label = chalk.green(`[${item.id}] ${item.title}`);
     const hash = md5(item.id);
     const directory = this.hashToPath(hash);
     if (existsSync(`${directory}/README.md`)) {
       console.log(`Exists: ${label}`);
       return;
     }
-    console.log(`Started: ${label} ...`, "color: orange");
+    console.log(`Started: ${label} ...`);
     console.time(label);
     mkdirSync(directory, { recursive: true });
     await this.saveAssets(item, directory);
