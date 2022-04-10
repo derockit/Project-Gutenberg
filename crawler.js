@@ -80,7 +80,7 @@ export class Crawler {
       console.log(`Exists: ${label}`);
       return;
     }
-    console.log(`Started: ${label} ...`);
+    console.log(`${chalk.red('Started:')} ${label} ...`);
     console.time(label);
     mkdirSync(directory, { recursive: true });
     await this.saveAssets(item, directory);
