@@ -72,13 +72,15 @@ export class Crawler {
   }
 
   async save(item) {
+    const label = `[${item.id}] ${item.title}`;
     const hash = md5(item.id);
     const directory = this.hashToPath(hash);
     if (existsSync(`${directory}/README.md`)) {
-      console.log(`Exists: [${item.id}] ${item.title}`);
+      console.log(`Exists: ${label}`);
       return;
     }
-    console.log(`Started: [${item.id}] ${item.title} ...`);
+    console.log(`Started: ${label} ...`);
+    console.time(label);
     mkdirSync(directory, { recursive: true });
     await this.saveAssets(item, directory);
     writeFileSync(`${directory}/meta.json`, JSON.stringify(item), {
@@ -89,8 +91,8 @@ export class Crawler {
     });
     appendFileSync(INDEX_FILE_PATH, `\n${item.id},${directory}`);
     await this.commitChanges(item);
-    console.log(`Added: [${item.id}] ${item.title}`);
-    console.log(Array(20).fill('-').join(''));
+    console.timeEnd(label);
+    console.log(Array(40).fill('-').join(''));
   }
 
   async saveAssets(item, directory) {
