@@ -1,0 +1,27 @@
+{
+  "name": "project-gutenberg",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "node crawler.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derockit/project-gutenberg.git"
+  },
+  "keywords": [],
+  "author": "Sajjad Shirazy <shirazy.sajjad@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derockit/project-gutenberg/issues"
+  },
+  "homepage": "https://github.com/derockit/project-gutenberg#readme",
+  "dependencies": {
+    "await-exec": "^0.1.2",
+    "json2md": "^1.12.0",
+    "md5": "^2.3.0",
+    "node-fetch": "^3.2.3"
+  }
+}
