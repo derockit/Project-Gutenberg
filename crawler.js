@@ -72,14 +72,14 @@ export class Crawler {
   }
 
   async save(item) {
-    const label = `[${item.id}] ${item.title}`;
+    const label = `%c[${item.id}] ${item.title}`;
     const hash = md5(item.id);
     const directory = this.hashToPath(hash);
     if (existsSync(`${directory}/README.md`)) {
       console.log(`Exists: ${label}`);
       return;
     }
-    console.log(`Started: ${label} ...`);
+    console.log(`Started: ${label} ...`, "color: orange");
     console.time(label);
     mkdirSync(directory, { recursive: true });
     await this.saveAssets(item, directory);
