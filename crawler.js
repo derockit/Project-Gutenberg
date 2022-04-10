@@ -77,10 +77,10 @@ export class Crawler {
     const hash = md5(item.id);
     const directory = this.hashToPath(hash);
     if (existsSync(`${directory}/README.md`)) {
-      console.log(`Exists: ${label}`);
+      console.log(`${chalk.cyan('Exists:')} ${label}`);
       return;
     }
-    console.log(`${chalk.red('Started:')} ${label} ...`);
+    console.log(`${chalk.cyan('Started:')} ${label} ...`);
     console.time(label);
     mkdirSync(directory, { recursive: true });
     await this.saveAssets(item, directory);
