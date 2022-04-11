@@ -1,4 +1,4 @@
-# Project Gutenberg Ebooks
+# Project Gutenberg
 
 A redistribution of project Gutenberg. It includes English, not copyrighted ones.
 
