@@ -4,7 +4,7 @@ A redistribution of project Gutenberg. It includes English, not copyrighted ones
 
 ## Usage
 
-The `database.sqlitle` contains an index from all crwaled items.
+The `database.sqlitle` contains an index from all crawled items.
 
 You can also generate the paths by the book ids yourselves:
 
