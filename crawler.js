@@ -62,7 +62,7 @@ export class Crawler {
     url.searchParams.append('languages', 'en');
     url.searchParams.append('copyright', 'false');
     url.searchParams.append('mime_type', 'application/epub+zip');
-    url.searchParams.append('sort', 'ascending');
+    // url.searchParams.append('sort', 'ascending');
     url.searchParams.append('page', this.status.lastPage + 1);
     // @ts-ignore
     return fetch(url).then((res) => res.json());
