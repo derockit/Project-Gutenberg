@@ -4,7 +4,9 @@ A redistribution of project Gutenberg. It includes English, not copyrighted ones
 
 ## Usage
 
-The `index.csv` file indexes existing files & their paths. You can generate the paths by the book ids yourselves too:
+The `database.sqlitle` contains an index from all crwaled items.
+
+You can also generate the paths by the book ids yourselves:
 
 ```javascript
 import md5 from 'md5';
