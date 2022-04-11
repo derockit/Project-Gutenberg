@@ -1,19 +1,24 @@
 // @ts-check
-import {
-  appendFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import chalk from 'chalk';
 import md5 from 'md5';
 import fetch from 'node-fetch';
 import json2md from 'json2md';
 import exec from 'await-exec';
+import { Sequelize, DataTypes } from 'sequelize';
 
 const STATUS_FILE_PATH = './status.json';
-const INDEX_FILE_PATH = './index.csv';
+const database = new Sequelize({
+  dialect: 'sqlite',
+  storage: `${process.cwd()}/database.sqlite`,
+});
+const index = database.define('Book', {
+  id: { type: DataTypes.INTEGER, primaryKey: true },
+  downloadsCount: { type: DataTypes.INTEGER, allowNull: false },
+  authorBirthYear: { type: DataTypes.INTEGER, allowNull: true },
+  authorDeathYear: { type: DataTypes.INTEGER, allowNull: true },
+  path: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+});
 
 export class Crawler {
   get status() {
@@ -74,12 +79,11 @@ export class Crawler {
     const hash = md5(item.id);
     const directory = this.hashToPath(hash);
     if (existsSync(`${directory}/README.md`)) {
+      const record = await index.findByPk(item.id);
+      if (!record) {
+        await this.saveIndex(item, directory);
+      }
       console.log(`${chalk.cyan('Exists:')} ${label}`);
-      const [author] = item.authors;
-      appendFileSync(
-        INDEX_FILE_PATH,
-        `\n${item.id},${item.download_count},${author?.birth_year},${author?.death_year},${directory}`
-      );
       return;
     }
     console.log(`${chalk.cyan('Started:')} ${label} ...`);
@@ -92,24 +96,21 @@ export class Crawler {
     writeFileSync(`${directory}/README.md`, this.createReadme(item), {
       encoding: 'utf8',
     });
-    const [author] = item.authors;
-    appendFileSync(
-      INDEX_FILE_PATH,
-      `\n${
-        item.id // ID
-      },${
-        item.download_count // Downloads count
-      },${
-        author?.birth_year || null // Author birth year
-      },${
-        author?.death_year || null // Author death year
-      },${
-        directory // Path
-      }`
-    );
+    await this.saveIndex(item, directory);
     await this.commitChanges(item);
     console.timeEnd(label);
     console.log(Array(40).fill('-').join(''));
+  }
+
+  async saveIndex(item, path) {
+    const [author] = item.authors;
+    return index.create({
+      id: item.id,
+      downloadsCount: item.download_count,
+      authorBirthYear: author?.birth_year || null,
+      authorDeathYear: author?.death_year || null,
+      path,
+    });
   }
 
   async saveAssets(item, directory) {
@@ -153,6 +154,7 @@ export class Crawler {
 }
 
 async function main() {
+  await database.sync();
   const crawler = new Crawler();
   await crawler.start();
 }
