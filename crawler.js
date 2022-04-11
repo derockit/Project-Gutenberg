@@ -95,7 +95,17 @@ export class Crawler {
     const [author] = item.authors;
     appendFileSync(
       INDEX_FILE_PATH,
-      `\n${item.id},${item.download_count},${author?.birth_year},${author?.death_year},${directory}`
+      `\n${
+        item.id // ID
+      },${
+        item.download_count // Downloads count
+      },${
+        author?.birth_year || null // Author birth year
+      },${
+        author?.death_year || null // Author death year
+      },${
+        directory // Path
+      }`
     );
     await this.commitChanges(item);
     console.timeEnd(label);
