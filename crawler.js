@@ -30,14 +30,7 @@ export class Crawler {
     let next = null;
     do {
       const page = await this.fetchNextPage();
-      const items = page.results.filter((item) => {
-        return (
-          !item.copyright &&
-          item.languages?.includes('en') &&
-          Object.keys(item.formats).includes('application/epub+zip')
-        );
-      });
-      for (const item of items) {
+      for (const item of page.results) {
         await this.save(item);
       }
       this.status = { lastPage: this.status.lastPage + 1 };
@@ -58,10 +51,14 @@ export class Crawler {
    * @returns {{ next: string; results: any[] }}
    */
   fetchNextPage() {
+    const url = new URL('https://gutendex.com/books/');
+    url.searchParams.append('languages', 'en');
+    url.searchParams.append('copyright', 'false');
+    url.searchParams.append('mime_type', 'application/epub+zip');
+    url.searchParams.append('sort', 'ascending');
+    url.searchParams.append('page', this.status.lastPage + 1);
     // @ts-ignore
-    return fetch(
-      `https://gutendex.com/books/?page=${this.status.lastPage + 1}`
-    ).then((res) => res.json());
+    return fetch(url).then((res) => res.json());
   }
 
   /**
@@ -90,7 +87,10 @@ export class Crawler {
     writeFileSync(`${directory}/README.md`, this.createReadme(item), {
       encoding: 'utf8',
     });
-    appendFileSync(INDEX_FILE_PATH, `\n${item.id},${directory}`);
+    appendFileSync(
+      INDEX_FILE_PATH,
+      `\n${item.id},${item.download_count},${item.authors[0].birth_year},${item.authors[0].death_year},${directory}`
+    );
     await this.commitChanges(item);
     console.timeEnd(label);
     console.log(Array(40).fill('-').join(''));
