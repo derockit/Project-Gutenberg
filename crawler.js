@@ -36,12 +36,16 @@ export class Crawler {
   async start() {
     let next = null;
     do {
-      const page = await this.fetchNextPage();
-      for (const item of page.results) {
-        await this.save(item);
+      try {
+        const page = await this.fetchNextPage();
+        for (const item of page.results) {
+          await this.save(item);
+        }
+        this.status = { lastPage: this.status.lastPage + 1 };
+        next = page.next;
+      } catch (error) {
+        console.error(error);
       }
-      this.status = { lastPage: this.status.lastPage + 1 };
-      next = page.next;
     } while (next);
   }
 
