@@ -75,6 +75,11 @@ export class Crawler {
     const directory = this.hashToPath(hash);
     if (existsSync(`${directory}/README.md`)) {
       console.log(`${chalk.cyan('Exists:')} ${label}`);
+      const [author] = item.authors;
+      appendFileSync(
+        INDEX_FILE_PATH,
+        `\n${item.id},${item.download_count},${author?.birth_year},${author?.death_year},${directory}`
+      );
       return;
     }
     console.log(`${chalk.cyan('Started:')} ${label} ...`);
@@ -87,9 +92,10 @@ export class Crawler {
     writeFileSync(`${directory}/README.md`, this.createReadme(item), {
       encoding: 'utf8',
     });
+    const [author] = item.authors;
     appendFileSync(
       INDEX_FILE_PATH,
-      `\n${item.id},${item.download_count},${item.authors[0].birth_year},${item.authors[0].death_year},${directory}`
+      `\n${item.id},${item.download_count},${author?.birth_year},${author?.death_year},${directory}`
     );
     await this.commitChanges(item);
     console.timeEnd(label);
