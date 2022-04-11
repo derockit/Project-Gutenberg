@@ -11,13 +11,15 @@ const STATUS_FILE_PATH = './status.json';
 const database = new Sequelize({
   dialect: 'sqlite',
   storage: `${process.cwd()}/database.sqlite`,
+  logging: false,
 });
 const index = database.define('Book', {
   id: { type: DataTypes.INTEGER, primaryKey: true },
+  title: { type: DataTypes.STRING, allowNull: false },
   downloadsCount: { type: DataTypes.INTEGER, allowNull: false },
   authorBirthYear: { type: DataTypes.INTEGER, allowNull: true },
   authorDeathYear: { type: DataTypes.INTEGER, allowNull: true },
-  path: { type: DataTypes.INTEGER, allowNull: false, unique: true },
+  path: { type: DataTypes.STRING, allowNull: false, unique: true },
 });
 
 export class Crawler {
@@ -106,6 +108,7 @@ export class Crawler {
     const [author] = item.authors;
     return index.create({
       id: item.id,
+      title: item.title,
       downloadsCount: item.download_count,
       authorBirthYear: author?.birth_year || null,
       authorDeathYear: author?.death_year || null,
