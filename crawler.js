@@ -95,18 +95,17 @@ export class Crawler {
     console.log(`${chalk.cyan('Started:')} ${label} ...`);
     console.time(label);
     mkdirSync(directory, { recursive: true });
-    if (await this.saveAssets(item, directory)) {
-      writeFileSync(`${directory}/meta.json`, JSON.stringify(item), {
-        encoding: 'utf8',
-      });
-      writeFileSync(`${directory}/README.md`, this.createReadme(item), {
-        encoding: 'utf8',
-      });
-      await this.saveIndex(item, directory);
-      await this.commitChanges(item);
-    } else {
+    if (!(await this.saveAssets(item, directory))) {
       console.log(`${chalk.cyan('Skipped:')} ${label}.`);
     }
+    writeFileSync(`${directory}/meta.json`, JSON.stringify(item), {
+      encoding: 'utf8',
+    });
+    writeFileSync(`${directory}/README.md`, this.createReadme(item), {
+      encoding: 'utf8',
+    });
+    await this.saveIndex(item, directory);
+    await this.commitChanges(item);
     console.timeEnd(label);
     console.log(Array(40).fill('-').join(''));
   }
