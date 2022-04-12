@@ -126,10 +126,9 @@ export class Crawler {
     const epubFile = await fetch(item.formats['application/epub+zip']).then(
       (res) => res.buffer()
     );
-    if (epubFile.length > Math.pow(1024, 2) * 10) {
-      return false;
+    if (epubFile.length <= Math.pow(1024, 2) * 100) {
+      writeFileSync(`${directory}/ebook.epub`, epubFile);
     }
-    writeFileSync(`${directory}/ebook.epub`, epubFile);
 
     const smallCover = await fetch(
       `https://www.gutenberg.org/cache/epub/${item.id}/pg${item.id}.cover.small.jpg`
