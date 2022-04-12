@@ -95,15 +95,18 @@ export class Crawler {
     console.log(`${chalk.cyan('Started:')} ${label} ...`);
     console.time(label);
     mkdirSync(directory, { recursive: true });
-    await this.saveAssets(item, directory);
-    writeFileSync(`${directory}/meta.json`, JSON.stringify(item), {
-      encoding: 'utf8',
-    });
-    writeFileSync(`${directory}/README.md`, this.createReadme(item), {
-      encoding: 'utf8',
-    });
-    await this.saveIndex(item, directory);
-    await this.commitChanges(item);
+    if (await this.saveAssets(item, directory)) {
+      writeFileSync(`${directory}/meta.json`, JSON.stringify(item), {
+        encoding: 'utf8',
+      });
+      writeFileSync(`${directory}/README.md`, this.createReadme(item), {
+        encoding: 'utf8',
+      });
+      await this.saveIndex(item, directory);
+      await this.commitChanges(item);
+    } else {
+      console.log(`${chalk.cyan('Skipped:')} ${label}.`);
+    }
     console.timeEnd(label);
     console.log(Array(40).fill('-').join(''));
   }
@@ -124,6 +127,9 @@ export class Crawler {
     const epubFile = await fetch(item.formats['application/epub+zip']).then(
       (res) => res.buffer()
     );
+    if (epubFile.length > Math.pow(1024, 2) * 10) {
+      return false;
+    }
     writeFileSync(`${directory}/ebook.epub`, epubFile);
 
     const smallCover = await fetch(
@@ -135,6 +141,7 @@ export class Crawler {
       `https://www.gutenberg.org/cache/epub/${item.id}/pg${item.id}.cover.medium.jpg`
     ).then((res) => res.buffer());
     writeFileSync(`${directory}/cover.medium.jpg`, mediumCover);
+    return true;
   }
 
   createReadme(item) {
